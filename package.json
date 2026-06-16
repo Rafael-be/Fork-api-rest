@@ -1,0 +1,32 @@
+{
+  "name": "api-rest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "body": "^5.1.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsdoc": "^4.0.5",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.22.5",
+    "parser": "^0.1.4",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rafael-be/API-rest.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Rafael-be/API-rest/issues"
+  },
+  "homepage": "https://github.com/Rafael-be/API-rest#readme"
+}
