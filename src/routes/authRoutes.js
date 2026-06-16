@@ -15,12 +15,12 @@ const authController = require('../controllers/authController');
  *           schema:
  *             type: object
  *             properties:
- *               nome:
+ *               usuario:
  *                 type: string
  *                 example: "João da Silva"
- *               telefone:
+ *               senha:
  *                 type: string
- *                 example: "11999999999"
+ *                 example: "senha_segura"
  *     responses:
  *       200:
  *         description: Login bem-sucedido.

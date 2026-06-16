@@ -16,6 +16,7 @@
     "express": "^5.2.1",
     "jsdoc": "^4.0.5",
     "jsonwebtoken": "^9.0.3",
+    "md5": "^2.3.0",
     "mysql2": "^3.22.5",
     "parser": "^0.1.4",
     "swagger-jsdoc": "^6.3.0",
