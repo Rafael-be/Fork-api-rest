@@ -116,7 +116,7 @@ Antes de começar, tenha instalado:
 Clone o repositório:
 
 ```bash
-git clone https://github.com/Rafael-be/API-rest.git
+git clone https://github.com/Rafael-be/fork-api-rest
 ```
 
 Entre na pasta do projeto:

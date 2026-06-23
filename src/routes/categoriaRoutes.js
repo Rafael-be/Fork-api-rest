@@ -7,10 +7,9 @@ const autenticacaoMiddleware = require('../middlewares/autenticacaoMiddleware');
  * @swagger
  * tags:
  *   name: Categorias
- *   description: CRUD Estrito de Categorias (Requer Token)
+ *   description: CRUD de categorias protegido por token JWT.
  */
 
-// Aplica o middleware de autenticação em TODAS as rotas deste arquivo
 router.use(autenticacaoMiddleware.verificarToken);
 
 /**
@@ -23,7 +22,7 @@ router.use(autenticacaoMiddleware.verificarToken);
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Sucesso
+ *         description: Categorias encontradas.
  */
 router.get('/', categoriaController.listarCategorias);
 
@@ -41,9 +40,12 @@ router.get('/', categoriaController.listarCategorias);
  *         required: true
  *         schema:
  *           type: integer
+ *         description: ID da categoria.
  *     responses:
  *       200:
- *         description: Sucesso
+ *         description: Categoria encontrada.
+ *       404:
+ *         description: Categoria nao encontrada.
  */
 router.get('/:id', categoriaController.buscarCategoria);
 
@@ -51,7 +53,7 @@ router.get('/:id', categoriaController.buscarCategoria);
  * @swagger
  * /api/categorias:
  *   post:
- *     summary: Cria uma nova categoria
+ *     summary: Cria uma categoria
  *     tags: [Categorias]
  *     security:
  *       - bearerAuth: []
@@ -61,12 +63,16 @@ router.get('/:id', categoriaController.buscarCategoria);
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [nome]
  *             properties:
  *               nome:
  *                 type: string
+ *                 example: Bebidas
  *     responses:
  *       201:
- *         description: Criado com sucesso
+ *         description: Categoria criada.
+ *       400:
+ *         description: Nome ausente.
  */
 router.post('/', categoriaController.criarCategoria);
 
@@ -84,18 +90,23 @@ router.post('/', categoriaController.criarCategoria);
  *         required: true
  *         schema:
  *           type: integer
+ *         description: ID da categoria.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [nome]
  *             properties:
  *               nome:
  *                 type: string
+ *                 example: Bebidas
  *     responses:
  *       200:
- *         description: Atualizado com sucesso
+ *         description: Categoria atualizada.
+ *       404:
+ *         description: Categoria nao encontrada.
  */
 router.patch('/:id', categoriaController.atualizarCategoria);
 
@@ -103,7 +114,7 @@ router.patch('/:id', categoriaController.atualizarCategoria);
  * @swagger
  * /api/categorias/{id}:
  *   delete:
- *     summary: Deleta uma categoria
+ *     summary: Remove uma categoria
  *     tags: [Categorias]
  *     security:
  *       - bearerAuth: []
@@ -113,9 +124,12 @@ router.patch('/:id', categoriaController.atualizarCategoria);
  *         required: true
  *         schema:
  *           type: integer
+ *         description: ID da categoria.
  *     responses:
  *       200:
- *         description: Deletado com sucesso
+ *         description: Categoria removida.
+ *       404:
+ *         description: Categoria nao encontrada.
  */
 router.delete('/:id', categoriaController.deletarCategoria);
 
