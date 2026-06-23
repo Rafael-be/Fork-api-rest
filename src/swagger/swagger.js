@@ -49,6 +49,22 @@ const options = {
             nome: { type: 'string', example: 'Bebidas' }
           }
         },
+        Cliente: {
+          type: 'object',
+          properties: {
+            id_cliente: { type: 'integer', example: 1 },
+            nome: { type: 'string', example: 'Joao da Silva' },
+            usuarios_id_usuario: { type: 'integer', example: 1 }
+          }
+        },
+        ClienteRequest: {
+          type: 'object',
+          required: ['nome', 'id_usuario'],
+          properties: {
+            nome: { type: 'string', example: 'Joao da Silva' },
+            id_usuario: { type: 'integer', example: 1 }
+          }
+        },
         Produto: {
           type: 'object',
           properties: {
