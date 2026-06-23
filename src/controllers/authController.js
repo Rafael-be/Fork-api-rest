@@ -11,6 +11,15 @@ const criarToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 };
 
+
+const verificarPermissaoEstrita = (req) => {
+  if (!req.user || !req.user.id_usuario) {
+    const erro = new Error('Acesso negado. ID do usuário não validado no token.');
+    erro.statusCode = 403; // 403 Forbidden conforme exigido
+    throw erro;
+  }
+};
+
 /**
  * Realiza o login do usuário.
  * Verifica as credenciais e retorna um token JWT em caso de sucesso.
@@ -69,3 +78,92 @@ exports.login = async (req, res) => {
     res.status(500).json({ status: 'error', message: err.message });
   }
 };
+
+
+
+exports.cadastro = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { nome, senha, status } = req.body;
+
+    if (!nome || !senha) { 
+      return res.status(400).json({ message: 'Por favor, informe nome e senha para cadastro' });
+    }
+
+    const usuarioExistente = await Usuario.findByNome(nome);
+
+    if (usuarioExistente) {
+      return res.status(400).json({ message: `O usuario ${nome} já existe` });
+    }
+
+    const senhaHash = md5(senha);
+    const novoUsuario = await Usuario.create({ nome, senha: senhaHash, status });
+
+    const novoToken = criarToken(novoUsuario.id);
+
+    res.status(201).json({
+      status: 'success',
+      informacoes: {
+        id_cliente: novoUsuario.id,
+        nome: novoUsuario.nome,
+        token: novoToken
+      }
+    });
+
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+};
+
+
+
+exports.deletar = async (req, res) => {
+  try{
+    verificarPermissaoEstrita(req);
+      await Usuario.deletar(req.params.id);
+      res.status(201).json({
+        status: 'Success',
+        message: `Usuário ${req.user.nome} foi deletado`
+      });
+  }catch(err){
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+}
+
+
+
+exports.listarTodosUsuarios = async (req, res) => {
+  try{
+    verificarPermissaoEstrita(req);
+    const usuarios = await Usuario.listarTodos();
+    res.status(201).json({
+      message: 'Lista de usuários:',
+      resultados: usuarios.length,
+      data: usuarios
+    });
+  
+  }catch(err){
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+}
+
+
+
+exports.alterarUsuario = async(req, res) => {
+  try{
+    verificarPermissaoEstrita(req);
+    const dados = req.body;
+    const id = req.params.id;
+
+    const usuarioAtualizado = await Usuario.atualizar(id, dados);
+    
+    res.status(201).json({
+      message: 'Alteração concluída com sucesso',
+      data: usuarioAtualizado
+    })
+
+
+  }catch(err){
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+}

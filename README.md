@@ -172,8 +172,8 @@ Descrição das variáveis:
 
 | Método | Rota | Autenticação | Descrição |
 | --- | --- | --- | --- |
-| `POST` | `/api/users/cadastro` | Não | Cadastra um novo usuário. |
-| `POST` | `/api/users/login` | Não | Autentica o usuário e retorna um token JWT. |
+| `POST` | `/api/auth/cadastro` | Não | Cadastra um novo usuário. |
+| `POST` | `/api/auth/login` | Não | Autentica o usuário e retorna um token JWT. |
 | `GET` | `/api/users/mostrar` | Não | Lista os usuários cadastrados. |
 | `PATCH` | `/api/users/atualizar-perfil` | Sim | Atualiza `username`, `email` e/ou `bio`. |
 | `PATCH` | `/api/users/atualizar-senha` | Sim | Altera a senha após confirmar a senha atual. |
@@ -199,30 +199,29 @@ Authorization: Bearer SEU_TOKEN_AQUI
 ### 1. Cadastrar usuário
 
 ```http
-POST /api/users/cadastro
+POST /api/auth/cadastro
 Content-Type: application/json
 ```
 
 ```json
 {
-  "username": "rafael",
-  "email": "rafael@email.com",
-  "password": "senha_segura",
-  "bio": "Desenvolvedor backend"
+  "nome": "Rafael",
+  "senha": "SenhaTeste",
+  "status": "bom"
 }
 ```
 
 ### 2. Fazer login
 
 ```http
-POST /api/users/login
+POST /api/auth/login
 Content-Type: application/json
 ```
 
 ```json
 {
-  "email": "rafael@email.com",
-  "password": "senha_segura"
+  "nome": "Rafael",
+  "senha": "SenhaTeste"
 }
 ```
 

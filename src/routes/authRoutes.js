@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const authMiddleware = require('../middlewares/autenticacaoMiddleware')
 
 /**
  * @swagger
@@ -26,5 +27,13 @@ const authController = require('../controllers/authController');
  *         description: Login bem-sucedido.
  */
 router.post('/login', authController.login);
+
+router.post('/cadastro', authController.cadastro);
+
+router.delete('/:id', authMiddleware.verificarToken, authController.deletar);
+
+router.get('/', authMiddleware.verificarToken, authController.listarTodosUsuarios);
+
+router.patch('/a')
 
 module.exports = router;

@@ -28,9 +28,13 @@ exports.verificarToken = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
     const usuarioAtual = await Usuario.findById(decoded.id);
-    
+
     if (!usuarioAtual) {
       return res.status(401).json({ message: 'O usuário deste token não existe mais.' });
+    }
+    
+    if(req.params.id && usuarioAtual.id_cliente != req.params.id){
+      return res.status(403).json({ message: 'Token e id nao coinscidem ao mesmo usuário'});
     }
 
     req.user = {
