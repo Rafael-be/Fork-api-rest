@@ -90,15 +90,42 @@ const options = {
           properties: {
             id_pedido: { type: 'integer', example: 1 },
             data: { type: 'string', format: 'date-time', example: '2026-06-23 14:30:00' },
-            clientes_id_cliente: { type: 'integer', example: 1 }
+            clientes_id_cliente: { type: 'integer', example: 1 },
+            produtos: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/PedidoProduto' }
+            }
+          }
+        },
+        PedidoProduto: {
+          type: 'object',
+          properties: {
+            produtos_id_produto: { type: 'integer', example: 1 },
+            nome: { type: 'string', example: 'Refrigerante' },
+            quantidade: { type: 'integer', example: 2 },
+            valor_unitario: { type: 'number', format: 'float', example: 8.5 },
+            valor_total: { type: 'number', format: 'float', example: 17 }
+          }
+        },
+        PedidoProdutoRequest: {
+          type: 'object',
+          required: ['id_produto', 'quantidade'],
+          properties: {
+            id_produto: { type: 'integer', example: 1 },
+            quantidade: { type: 'integer', example: 2 }
           }
         },
         PedidoRequest: {
           type: 'object',
-          required: ['data', 'id_cliente'],
+          required: ['data', 'id_cliente', 'produtos'],
           properties: {
             data: { type: 'string', format: 'date-time', example: '2026-06-23 14:30:00' },
-            id_cliente: { type: 'integer', example: 1 }
+            id_cliente: { type: 'integer', example: 1 },
+            produtos: {
+              type: 'array',
+              minItems: 1,
+              items: { $ref: '#/components/schemas/PedidoProdutoRequest' }
+            }
           }
         }
       }

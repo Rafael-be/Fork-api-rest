@@ -19,15 +19,43 @@ const verificarPermissaoEstrita = (req) => {
  * @param {string} body.data Data e hora do pedido.
  * @param {number} [body.id_cliente] ID do cliente enviado pela API.
  * @param {number} [body.clientes_id_cliente] Nome real da FK no banco.
- * @returns {{data: string, clientes_id_cliente: number}}
+ * @returns {{data: string, clientes_id_cliente: number, produtos: Array}}
  */
 const normalizarDadosPedido = (body) => {
   const idCliente = body.id_cliente ?? body.clientes_id_cliente;
+  const produtos = Array.isArray(body.produtos)
+    ? agruparProdutos(body.produtos.map((produto) => ({
+      produtos_id_produto: Number(produto.id_produto ?? produto.produtos_id_produto),
+      quantidade: Number(produto.quantidade)
+    })))
+    : body.produtos;
 
   return {
     data: body.data,
-    clientes_id_cliente: idCliente
+    clientes_id_cliente: idCliente,
+    produtos
   };
+};
+
+/**
+ * Soma quantidades quando o mesmo produto aparece mais de uma vez no pedido.
+ * @param {Array} produtos Produtos normalizados.
+ * @returns {Array} Produtos agrupados por ID.
+ */
+const agruparProdutos = (produtos) => {
+  const produtosAgrupados = new Map();
+
+  produtos.forEach((produto) => {
+    const itemAtual = produtosAgrupados.get(produto.produtos_id_produto) || {
+      produtos_id_produto: produto.produtos_id_produto,
+      quantidade: 0
+    };
+
+    itemAtual.quantidade += produto.quantidade;
+    produtosAgrupados.set(produto.produtos_id_produto, itemAtual);
+  });
+
+  return Array.from(produtosAgrupados.values());
 };
 
 /**
@@ -35,8 +63,25 @@ const normalizarDadosPedido = (body) => {
  * @param {Object} pedido Dados do pedido.
  * @returns {boolean} True quando os campos obrigatorios existem.
  */
-const camposObrigatoriosPresentes = ({ data, clientes_id_cliente }) => {
-  return data !== undefined && clientes_id_cliente !== undefined;
+const camposObrigatoriosPresentes = ({ data, clientes_id_cliente, produtos }) => {
+  return data !== undefined
+    && clientes_id_cliente !== undefined
+    && Array.isArray(produtos)
+    && produtos.length > 0;
+};
+
+/**
+ * Valida se os produtos do pedido possuem ID e quantidade valida.
+ * @param {Array} produtos Produtos do pedido.
+ * @returns {boolean} True quando todos os itens possuem dados validos.
+ */
+const produtosValidos = (produtos) => {
+  return produtos.every(({ produtos_id_produto, quantidade }) => {
+    return Number.isInteger(produtos_id_produto)
+      && produtos_id_produto > 0
+      && Number.isInteger(Number(quantidade))
+      && Number(quantidade) > 0;
+  });
 };
 
 /**
@@ -86,7 +131,11 @@ exports.criarPedido = async (req, res) => {
     const dadosPedido = normalizarDadosPedido(req.body);
 
     if (!camposObrigatoriosPresentes(dadosPedido)) {
-      return res.status(400).json({ message: 'Informe data e id_cliente' });
+      return res.status(400).json({ message: 'Informe data, id_cliente e ao menos um produto' });
+    }
+
+    if (!produtosValidos(dadosPedido.produtos)) {
+      return res.status(400).json({ message: 'Informe id_produto e quantidade positiva para todos os produtos' });
     }
 
     const idGerado = await Pedido.criar(dadosPedido);
@@ -108,7 +157,11 @@ exports.atualizarPedido = async (req, res) => {
     const dadosPedido = normalizarDadosPedido(req.body);
 
     if (!camposObrigatoriosPresentes(dadosPedido)) {
-      return res.status(400).json({ message: 'Informe data e id_cliente' });
+      return res.status(400).json({ message: 'Informe data, id_cliente e ao menos um produto' });
+    }
+
+    if (!produtosValidos(dadosPedido.produtos)) {
+      return res.status(400).json({ message: 'Informe id_produto e quantidade positiva para todos os produtos' });
     }
 
     const linhasAfetadas = await Pedido.atualizar(req.params.id, dadosPedido);
